@@ -1,0 +1,192 @@
+<!doctype html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<title>数独 SubsetExclude</title>
+	
+    <!-- Prism   https://prismjs.com/download.html -->
+	<script src="prism_js_css/prism.js"></script>
+	<link rel="stylesheet" href="prism_js_css/prism.css">
+
+
+	<!-- jQuery treeview ! -->	
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.min.js"></script>
+	<script src="jq_treeview/jquery.cookie.js"></script>
+	<script src="jq_treeview/jquery.treeview.js"></script>
+	<link   rel="stylesheet" href="jq_treeview/jquery.treeview.css" >
+	<link   rel="stylesheet" href="jq_treeview/screen.css" >
+	<script type="text/javascript" src="jq_treeview/cssFunction.js"></script>
+
+
+	<link rel="stylesheet" href='css/style_v4_HeaderFooter.css'>
+	<link rel="stylesheet" href="css/style_v5A_Standard.css">
+	<link rel="stylesheet" href='css/gotoTop.css'>
+
+	<script type="text/javascript" src="js/naviHeader.js"> </script>
+	<script type="text/javascript" src="js/naviAlgorithm.js"> </script>
+</head>
+
+
+<body id="page">
+	<header id="head"> <strong><i>Sudoku Algorithm 4</i></strong>
+        <script type="text/javascript"> writeNaviHeader(); </script>
+	</header>
+
+    <section id="menuList">
+        <script type="text/javascript"> writeNaviAlgorithm(); </script>	
+    </section>
+
+
+
+	<!-- -------------------------------------------------------------------------- -->
+
+	<article id="main">
+		<section><br>
+			<h4>[GNPX v5.1]</h4>
+
+			<H3 id="head_bg_Blue">Fireworks</H3>
+			<p>Fireworkは、盤面上に生じる数字配置の状態で、これだけでは数独数字を肯定/否定することはありません。
+				しかし、複数のfireworkを組み合わせたり、他の数字配置と組み合わせて数独解法アルゴリズムとなります。
+				ALS、リンクなどと同様の、数独盤面上の状態です。
+				なお、Fireworkアルゴリズムは、次のHPを参考にしています。<br>
+				<strong>
+					The New Sudoku Players' Forum<br>
+					<a>http://forum.enjoysudoku.com/fireworks-t39513.html</a>
+				</strong>
+			</p>
+			<h4 id="head_bg_LightBlue">Firework の定義</h4>
+			<p>
+				Fireworkは、次のように定義します。
+				<ol>
+					<li>盤面上の 数字”n”の配置に着目する。</li>
+					<li>数字”n”を候補に持つセル A を選ぶ。</li>
+					<li>セルA のブロックを block-Aとする。</li>
+					<li>block-A外で、かつセルA と同じ行Houseをrow-Bとする。<br>
+						row-BにセルBを選ぶ。Bは数字”n”を候補に持つ row-B内の唯一のセルとする。</li>
+					<li>block-A外で、かつセルA と同じ列Houseをcolumn-Cとする。<br>
+						column-CにセルCを選ぶ。Cは数字”n”を候補に持つ column-C内の唯一のセルとする。</li>
+					<li>Fireworkの構成セルが強いリンクでつながっている状態を、Firework-sとする。</li>
+				</ol>
+				これらの設定の下で、次の命題は正しい。<br>
+				&nbsp;&nbsp;&nbsp;<strong><u>命題 : Firework(セルA,B,C)は、少なくとも1個の数字"n"を含む</u></strong><br>
+				<ul>
+					<li>セルBまたはセルCが 数字"n"なら、命題は正しい。セルB,Cが両方とも 数字"n"のこともある。</li>
+					<li>セルB、C が両方とも数字"n"でないなら、セルAは 数字"n" となり、命題は正しい。</li>
+					<li>セルA、B、Cがいずれも 数字"n" でないと、数独の問題として破綻する。 </li>
+					<li>最初の図で、a1,a2,a3,a4	のいずれかが数字"n"となることはある。２つ以上のセルが数字"n"となることはない。<br>
+						この場合も、セルBまたはセルCが 数字"n"であり、命題は正しい。 </li>
+					<li>Firework-sでは、セルB、Cの状態は同じとなる。</li>
+				</ul>
+				<img src="images/img58/image58_10_firework_def.png" width="60%" alt="Force Algorithm"><br><br>
+				
+				以下では、Fireworkを次のように表記する。<br>
+				<img src="images/img58/image58_11_firework_def.png" width="55%" alt="Force Algorithm"><br><br>
+					
+				Fireworkアルゴリズムでは、重なったFireworkを用いるものがある。<br>
+				<img src="images/img58/image58_12_firework_def.png" width="80%" alt="Force Algorithm"><br><br>
+					
+				Fireworkには、次のような特殊なタイプもある。
+				<ul>
+					<li>Strong型 : StemとLeafが strongLinkでつながったタイプ。2つのLeafは、候補数字と属性が一致する。<br></li>
+					<li>Leafが1つしかないタイプ。</li>
+				</ul>
+				<img src="images/img58/image58_13_firework_def.png" width="55%" alt="Force Algorithm"><br><br>
+				
+		
+
+			<!-- ============================================================ -->
+				<H3 id="head_bg_Blue">Fireworks 解析アルゴリズム</H3>
+				<h4 id="head_bg_LightBlue">(1) Firework triple</h4>
+				<p>
+					<stong>Firework triple</stong>は、3つのfireworkが重なっている状態です(3DFirework,stemとLeaf-1,2が全てのFireworkで一致する)。<br>
+					このとき、stemとLeaf-1,2のセルは3数字で Locked であり、3数字以外の候補は除外できます。
+				</p>
+				<img src="images/img58/image58_20_Firework_triple.png" width="50%" alt="Firework triple"><br><br>
+
+
+				<h4 id="head_bg_LightBlue">(2) Firework triple</h4>
+				<p>
+					2つの firework が重なっている状態を 2DFirework と表記します(stemとLeafが全て一致する)。<br>
+					<stong>Firework quadruple</stong>は、2組の 2DFirework の Leaf-1,2が重なっている状態です(2つのStemは位置が異なる）。<br>
+					これは、4セルに4数字が Locked となっています。従って、4セルの4数字以外の候補は除外できます。
+				</p>
+				<img src="images/img58/image58_21_Firework_quadruple.png" width="50%" alt="Firework_quadruple"><br><br>
+
+
+				<h4 id="head_bg_LightBlue">(3) Firework W-Wing</h4>
+				<p>
+					2DFirework と、2つのbivalue Cell(ALS)が次の図のように配置されているとします。<br>
+					この状態は Locked で、交差する位置にある数字要素（次図の"a")は除外できます。<br>
+				</p>
+				<img src="images/img58/image58_22_Firework_WWing.png" width="50%" alt="Firework_WWing"><br><br>
+
+
+				<h4 id="head_bg_LightBlue">(4) Firework L-Wing</h4>
+				<p>
+					2DFirework と、1つの強fireworkがLeafを共有しているとします。<br>
+					この状態で、Leafセルから強firework の数字要素（次図の"x")は除外できます。<br>
+				</p>
+				<img src="images/img58/image58_23_Firework_LWing.png" width="50%" alt="Firework_LWing"><br><br>
+
+
+				<h4 id="head_bg_LightBlue">(5) Firework ALP</h4>
+				<p>
+					2DFirework と、1つのBivalueセルが次図のように配置されているとします。<br>
+					この状態で、Stemセルから Firework の数字要素以外の数字（次図の"z")は除外できます。<br>
+				</p>
+				<img src="images/img58/image58_24_Firework_ALP.png" width="50%" alt="Firework_LWing"><br><br>
+
+
+
+
+
+<!--
+			<h3 id="head_bg_LightBlue">SubsetExclusion サンプル</h3>
+			<p>
+				SubsetExclusion、SubsetExclusio_ALSの例です。<br>
+				2、3番目のサンプルの、セル左上にオレンジの小丸を表示したセルは、ALSの重なりのある個所です。
+			</p>
+            <p>
+                <img src="images/img57/image57_Subset_20.png" width="30%" style="float:left;  margin-right:8px;" alt="SubSetExclusion">
+                <strong>SubsetExclusion<br></strong>
+				Stem: r1c5 r2c39 #1789<br>
+				Leaf: Cell r2c6 #179<br>
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Cell r2c4 #189<br>
+				<p class="newLine"></p>.2...36.434..6.25.69..243.82564.8.3.48.396.25.3925.48687463.5.2563..2.4.912745863</p>
+            </p>
+			<p>
+                <img src="images/img57/image57_Subset_21.png" width="30%" style="float:left;  margin-right:8px;" alt="SubSetExclusion">
+				<strong>SubsetExclusion_with_ALS</strong><br>
+				Stem: r7c8 r9c7 #5689<br>
+				Leaf: Cell r8c7 #58<br>
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ALS r28c7 #568 RCC#68
+				<p class="newLine"></p>6..2..9.1.8.9.4.2...9.1.3..796821435..34..7..45.39716...7.4.2...6.7.9.149....2.73</p>
+            </p>
+			<p>
+                <img src="images/img57/image57_Subset_22.png" width="30%" style="float:left;  margin-right:8px;" alt="SubSetExclusion">
+				<strong>SubsetExclusion_with_ALS</strong><br>
+				Stem: r1c2 r7c9 r8c7 #3456789<br>
+				Leaf:  ALS r79c2 #134 RCC#34<br>
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ALS r29c7 #568 RCC#58<br>
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ALS r579c2 #1234 RCC#34<br>
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ALS r359c2 #1247 RCC#47<br>
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ALS r1c3 r2c13 #1345 RCC#34<br>
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ALS r1c3 r3c12 #2457 RCC#47<br>
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ALS r1c368 #3458 RCC#34<br>
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ALS r1c3 r2c13 r3c1 #12345 RCC#34<br>
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ALS r1c3568 #34578 RCC#347<br>
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ALS r1c56 r3c46 #35678 RCC#37<br>
+				<p class="newLine"></p>6..2..9.1.8.9.4.2...9.1.3..796821435..34..7..45.39716...7.4.2...6.7.9.149....2.73</p>
+            </p>
+-->
+		</section>
+	</article>
+
+    <a href="#" class="pagetop">Top</a>
+	<footer id="foot">
+		<p id="copyright">Copyright &copy; 2014- GNPX. All rights reserved.</p>
+	</footer>
+
+</body>
+</html>
