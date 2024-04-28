@@ -97,29 +97,58 @@
 
 			<!-- ============================================================ -->
 				<H3 id="head_bg_Blue">Fireworks 解析アルゴリズム</H3>
+
+
 				<h4 id="head_bg_LightBlue">(1) Firework triple</h4>
 				<p>
 					<stong>Firework triple</stong>は、3つのfireworkが重なっている状態です(3DFirework,stemとLeaf-1,2が全てのFireworkで一致する)。<br>
 					このとき、stemとLeaf-1,2のセルは3数字で Locked であり、3数字以外の候補は除外できます。
 				</p>
 				<img src="images/img58/image58_20_Firework_triple.png" width="50%" alt="Firework triple"><br><br>
-
-
-				<h4 id="head_bg_LightBlue">(2) Firework triple</h4>
 				<p>
-					2つの firework が重なっている状態を 2DFirework と表記します(stemとLeafが全て一致する)。<br>
+					<img src="images/img58/image58_30_FW_triple.png" width="25%" style="float:left;  margin-right:8px;" alt="SubSetExclusion">
+					<strong>Firework_Triple<br></strong>
+						Stem : r7c3 #12459<br>
+						Leaf:r6c3 r7c4<br>
+					<p class="newLine">1.....5.82.........4..9.7.6..3..2....26.8.9..5....92......73....8....1.....9...42</p>
+				</p>
+
+
+				<h4 id="head_bg_LightBlue">(2) Firework Quadruple</h4>
+				<p>
+					2つの firework が重なっている状態を Fireworkx2 と表記します(stemとLeafが全て一致する)。<br>
 					<stong>Firework quadruple</stong>は、2組の 2DFirework の Leaf-1,2が重なっている状態です(2つのStemは位置が異なる）。<br>
 					これは、4セルに4数字が Locked となっています。従って、4セルの4数字以外の候補は除外できます。
 				</p>
 				<img src="images/img58/image58_21_Firework_quadruple.png" width="50%" alt="Firework_quadruple"><br><br>
+				<p>
+					<img src="images/img58/image58_31_FW_Quadruple.png" width="25%" style="float:left;  margin-right:8px;" alt="SubSetExclusion">
+					<strong>Firework_Quadruple<br></strong>
+						Stem : r5c1#17 r7c8#26<br>
+						Leaf : r5c8#12679  r7c1#12367<br>
+					<p class="newLine">1.....5.82.........4..9.7.6..3..2....26.8.9..5....92......73....8....1.....9...42</p>
+				</p>
+
 
 
 				<h4 id="head_bg_LightBlue">(3) Firework WWing</h4>
 				<p>
-					2DFirework と、2つのbivalue Cell(ALS)が次の図のように配置されているとします。<br>
+					Fireworkx2 と、2つのbivalue Cell(ALS)が次の図のように配置されているとします。<br>
 					この状態は Locked で、交差する位置にある数字要素（次図の"a")は除外できます。<br>
 				</p>
-				<img src="images/img58/image58_22_Firework_WWing.png" width="50%" alt="Firework_WWing"><br><br>
+				<img src="images/img58/image58_22_Firework_WWing.png" width="50%" alt="Firework_WWing"><br>
+				<p>
+					<img src="images/img58/image58_32_FW_WWing.png" width="25%" style="float:left;  margin-right:8px;" alt="SubSetExclusion">
+					<strong>Firework_WWing</strong><br>
+						Stem : r3c3#26<br>
+						Leaf : r3c5#346  r5c3#2679<br>
+						Assist : r4c5#26  r5c9#26<br>
+						Exclude : r5c5#26<br>
+					<p class="newLine">1..89..4.8..21...7...7.59813154.9..8.8.5..41...41.8395..1382.646.89..1...236.18.9</p>
+				</p>
+
+
+
 
 
 				<h4 id="head_bg_LightBlue">(4) Firework LWing</h4>
@@ -130,13 +159,21 @@
 				<img src="images/img58/image58_23_Firework_LWing.png" width="50%" alt="Firework_LWing"><br><br>
 
 
-				<h4 id="head_bg_LightBlue">(5) Firework ALP</h4>
+				<h4 id="head_bg_LightBlue">(5) Firework ALP-s</h4>
 				<p>
-					2DFirework と、1つのBivalueセルが次図のように配置されているとします。<br>
+					Fireworkx2 と、1つのBivalueセルが次図のように配置されているとします。<br>
 					この状態で、Stemセルから Firework の数字要素以外の数字（次図の"z")は除外できます。<br>
 				</p>
-				<img src="images/img58/image58_24_Firework_ALP.png" width="50%" alt="Firework_LWing"><br><br>
-
+				<img src="images/img58/image58_24_Firework_ALP-s.png" width="50%" alt="Firework_LWing"><br><br>
+				<p>
+					<img src="images/img58/image58_34_FW_ALP-s.png" width="25%" style="float:left;  margin-right:8px;" alt="SubSetExclusion">
+					<strong>Firework_ALP-s</strong><br>
+						Stem : r7c3#69<br>
+						Leaf : r5c3#34679 r7c5#16789<br>
+						Assist : r5c5#69<br>
+						Exclude : r7c3#69<br>
+					<p class="newLine">.9.....4.6...2...8...1.4.....2..758..8.5...1...584.3.....4.5...1...3...6.7.....9.</p>
+				</p>
 
 
 
